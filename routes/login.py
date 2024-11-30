@@ -9,7 +9,10 @@ def login():
     Logs in a user by checking the name and password against the database.
 
     Args:
-        None.
+        JSON: {
+            'username': str,
+            'password': str
+        }
 
     Returns:
         JSON: A message indicating whether the login was successful or not.
@@ -34,7 +37,10 @@ def register():
     Registers a new user by creating a new entry in the database.
 
     Args:
-        None.
+        JSON: {
+            'username': str,
+            'password': str
+        }
     
     Returns:
         JSON: A message indicating whether the user was created successfully or not
@@ -66,7 +72,11 @@ def change_password():
     Changes the password of an existing user.
 
     Args:
-        None.
+        JSON: {
+            'username': str,
+            'old_password': str,
+            'new_password': str
+        }
 
     Returns:
         JSON: A message indicating whether the password was changed successfully or not
