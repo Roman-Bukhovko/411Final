@@ -14,15 +14,14 @@ def login():
     Returns:
         JSON: A message indicating whether the login was successful or not.
     """
-    name = request.form.get('name')
-    password = request.form.get('password')
+    username, password = request.json.get('username'), request.json.get('password')
     
-    # check if fields are missing
-    if not name or not password:
-        return jsonify({'status': 'Missing name or password'})
-    
+    # sanity check
+    if not username or not password:
+        return jsonify({'status': 'Missing username or password'})
+
     # check if user exists and password is correct
-    user = User.query.filter_by(name=name).first()
+    user = db.session.get(User, username)
     
     if user and user.check_password(password):
         return jsonify({'status': 'Login successful'})
@@ -40,20 +39,19 @@ def register():
     Returns:
         JSON: A message indicating whether the user was created successfully or not
     """
-    name = request.form.get('name')
-    password = request.form.get('password')
+    username, password = request.json.get('username'), request.json.get('password')
     
-    # check if fields are missing
-    if not name or not password:
+    # sanity check
+    if not username or not password:
         return jsonify({'status': 'Missing name or password'})
     
     # check if user already exists
-    user = User.query.filter_by(name=name).first()
+    user = db.session.get(User, username)
     if user:
-        return jsonify({'status': 'User already exists'})
+        return jsonify({'status': 'Username already exists'})
     
     # Create new user and set the password
-    user = User(name=name)
+    user = User(username=username)
     user.set_password(password)
     
     # Save the user to the database
@@ -73,20 +71,18 @@ def change_password():
     Returns:
         JSON: A message indicating whether the password was changed successfully or not
     """
-    name = request.form.get('name')
-    old_password = request.form.get('old_password')
-    new_password = request.form.get('new_password')
+    username = request.json.get('username')
+    old_password = request.json.get('old_password')
+    new_password = request.json.get('new_password')
     
-    # check if fields are missing
-    if not name or not old_password or not new_password:
+    # sanity check
+    if not username or not old_password or not new_password:
         return jsonify({'status': 'Missing required fields'})
     
-    user = User.query.filter_by(name=name).first()
+    user = db.session.get(User, username)
     
     if user and user.check_password(old_password):
         user.set_password(new_password)
-        
-        # Save the updated password to the database
         db.session.commit()
         
         return jsonify({'status': 'Password changed'})
