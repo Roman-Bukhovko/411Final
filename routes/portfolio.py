@@ -1,8 +1,10 @@
-from flask import request, jsonify
+from flask import Blueprint, request, jsonify
 from data.models import User, Stock, db
 import yfinance as yf
 
-@app.route('/portfolio', methods=['GET'])
+port_bp = Blueprint('portfolio', __name__)
+
+@port_bp.route('/portfolio', methods=['GET'])
 def portfolio():
     """
     Displays user's current stock portfolio and its total value.
@@ -14,7 +16,7 @@ def portfolio():
         JSON: A message with the portfolio details and total value.
     """
 
-    username = request.json.get("username")
+    username = request.form.get("username")
 
     if not username: 
         return jsonify({"status": "error", "message": "Username is required"}), 400 
