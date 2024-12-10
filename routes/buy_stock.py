@@ -23,11 +23,13 @@ def buy_stock():
     ticker = request.json.get("ticker")
     quantity = request.json.get("quantity")
 
-    current_app.logger.info(f"User {username} is buying {quantity} shares of {ticker}")
-
     if not username or not ticker or not quantity:
         current_app.logger.error("Missing fields")
         return jsonify({"status": "error", "message": "Missing fields"}), 400 
+    
+    quantity = int(quantity)
+    
+    current_app.logger.info(f"User {username} is buying {quantity} shares of {ticker}")
     
     user = db.session.get(User, username)
     if not user: 

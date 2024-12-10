@@ -4,7 +4,7 @@ import yfinance as yf
 
 sell_bp = Blueprint('sell-stock', __name__)
 
-@sell_bp.route('/sell-stock', methods=['POST'])
+@sell_bp.route('/sell_stock', methods=['POST'])
 def sell_stock():
     """
     Allows a user to sell shares of a specified stock.
@@ -27,6 +27,8 @@ def sell_stock():
     if not username or not ticker or not quantity:
         current_app.logger.error("Missing fields")
         return jsonify({"status": "error", "message": "Missing fields"}), 400 
+    
+    quantity = int(quantity)
     
     current_app.logger.info(f"User {username} is selling {quantity} shares of {ticker}")
     user = db.session.get(User, username)
