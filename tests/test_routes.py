@@ -16,6 +16,10 @@ def test_client():
         yield app.test_client()
         db.session.remove()
 
+#########################
+#Login Unit Tests
+#########################
+
 def test_register(test_client):
     """
     Test user registration. 
@@ -28,6 +32,37 @@ def test_register(test_client):
     assert response.status_code == 200
     assert response.json['status'] == "success"
     assert response.json['message'] == "User created"
+
+def test_register_duplicate(test_client):
+    """
+    Test user registration for duplicate users
+    """
+
+    #Register a user
+    test_client.post('/register', data=json.dumps({
+        "name": "test",
+        "password": "password"
+    }), content_type='application/json')
+
+    #Register same user again
+    response = test_client.post('/register', data=json.dumps({
+        "name": "test",
+        "password": "password"
+    }), content_type='application/json')
+
+    assert response.status_code == 400
+    assert response.json['status'] == "Username already exists"
+
+def test_register_missing_credentials(test_client):
+    """
+    Test user registration with missing fields
+    """
+
+    response = test_client.post('/register', data=json.dumps({
+        "name": "test"})
+
+    assert response.status_code == 200
+    assert response.json['status'] == "Missing name or password"
 
 def test_login(test_client):
     """
@@ -50,6 +85,36 @@ def test_login(test_client):
     assert response.json['status'] == "success"
     assert response.json['message'] == "Login successful"
 
+def test_login_missing_credentials(test_client):
+    """
+    Test the login of users with missing credentials
+    """
+    response = test_client.post('/login', json={
+        "name": "test"
+    })
+
+    assert response.status_code == 200
+    assert response.json['status'] == "Missing username or password"
+
+def test_login_wrong_credentials(test_client):
+    """
+    Test the login of users with wrong credentials
+    """
+    # Register a user
+    test_client.post('/register', data=json.dumps({
+        "name": "test",
+        "password": "password"
+    }), content_type='application/json')
+
+    #Try login with wrong credentials
+    response = test_client.post('/login', data=json.dumps({
+        "name": "test",
+        "password": "None"
+    }))
+
+    assert response.status_code == 200
+    assert response.json['status'] == "Invalid credentials"
+    
 def test_buy_stock():
     """
     Test buying stock. 
