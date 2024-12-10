@@ -92,14 +92,18 @@ def change_password():
     
     # sanity check
     if not username or not old_password or not new_password:
+        current_app.logger.error('Missing required fields')
         return jsonify({'status': 'Missing required fields'})
     
+    current_app.logger.info(f'User {username} requesting password change')
+
     user = db.session.get(User, username)
     
     if user and user.check_password(old_password):
         user.set_password(new_password)
         db.session.commit()
-        
+        current_app.logger.info(f'Password changed')
         return jsonify({'status': 'Password changed'})
     else:
+        current_app.logger.info(f'Invalid credentials')
         return jsonify({'status': 'Invalid credentials'})
