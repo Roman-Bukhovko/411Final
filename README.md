@@ -42,24 +42,23 @@
     - Success Response Example:
       ### Code: 200
     `{
-      "message": "Purchase successful",
-      "status": "200",
-      "total_cost": 1000
+      "status": "success",
+      "message": "Stock added to portfolio"
     }`
 
   - Example Request:
 
     `{
-      "symbol": "AAPL",
+      "username": "testuser",
+      "ticker": "AAPL",
       "quantity": 10
     }`
 
   - Example Response:
 
     `{
-      "message": "Purchase successful",
-      "status": "200",
-      "total_cost": 1000
+      "status": "success",
+      "message": "Stock added to portfolio"
     }`
 
 
@@ -73,24 +72,23 @@
     - Success Response Example:
       ### Code: 200
     `{
-      "message": "Sale successful",
-      "status": "200",
-      "total_revenue": 900
+      "status": "success",
+      "message": "Stock removed from portfolio"
     }`
 
   - Example Request:
 
     `{
-      "symbol": "AAPL",
+      "username": "testuser",
+      "ticker": "AAPL",
       "quantity": 5
     }`
 
   - Example Response:
 
     `{
-      "message": "Sale successful",
-      "status": "200",
-      "total_revenue": 900
+      "status": "success",
+      "message": "Stock removed from portfolio"
     }`
 
 
@@ -102,45 +100,25 @@
     - Success Response Example:
       ### Code: 200
     `{
-      "stocks": [
-        {
-          "symbol": "AAPL",
-          "quantity": 10,
-          "current_price": 150,
-          "total_value": 1500
-        },
-        {
-          "symbol": "GOOGL",
-          "quantity": 5,
-          "current_price": 2000,
-          "total_value": 10000
-        }
-      ],
-      "portfolio_value": 11500
+      "status": "success",
+      "portfolio": {
+        "AAPL": 10,
+        "GOOGL": 5
+      }
     }`
 
   -  Example Request:
     `{
-      // No request body is needed, simply request the portfolio.
+      "username": "testuser"
     }`
 
   - Example Response:
       `{
-        "stocks": [
-          {
-            "symbol": "AAPL",
-            "quantity": 10,
-            "current_price": 150,
-            "total_value": 1500
-          },
-          {
-            "symbol": "GOOGL",
-            "quantity": 5,
-            "current_price": 2000,
-            "total_value": 10000
-          }
-        ],
-        "portfolio_value": 11500
+        "status": "success",
+        "portfolio": {
+          "AAPL": 10,
+          "GOOGL": 5
+        }
       }`
 
 
@@ -152,30 +130,24 @@
     - Success Response Example:
       ### Code: 200
     `{
-      "symbol": "AAPL",
-      "current_price": 150,
-      "historical_prices": [
-        {"date": "2024-11-20", "price": 145},
-        {"date": "2024-11-19", "price": 148}
-      ],
-      "description": "Apple Inc."
+      "status": "success",
+      "ticker": "AAPL",
+      "last_prices": [150, 152, 148, 149, 151],
+      "volumes": [1000000, 1200000, 1100000, 1050000, 1300000]
     }`
 
   - Example Request:
 
     `{
-      "symbol": "AAPL"
+      "ticker": "AAPL"
     }`
 
   - Example Response:
     `{
-      "symbol": "AAPL",
-      "current_price": 150,
-      "historical_prices": [
-        {"date": "2024-11-20", "price": 145},
-        {"date": "2024-11-19", "price": 148}
-      ],
-      "description": "Apple Inc."
+      "status": "success",
+      "ticker": "AAPL",
+      "last_prices": [150, 152, 148, 149, 151],
+      "volumes": [1000000, 1200000, 1100000, 1050000, 1300000]
     }`
 
 
@@ -187,23 +159,17 @@
     - Success Response Example:
       ### Code: 200
       `{
-        "total_value": 11500,
-        "stocks": [
-          {"symbol": "AAPL", "quantity": 10, "current_price": 150, "total_value": 1500},
-          {"symbol": "GOOGL", "quantity": 5, "current_price": 2000, "total_value": 10000}
-        ]
+        "status": "success",
+        "portfolio_value": 11500
       }`
 
   - Example Request:
     `{
-      // No request body is needed for this route.
+      "username": "testuser"
     }`
 
   - Example Response:
     `{
-      "total_value": 11500,
-      "stocks": [
-        {"symbol": "AAPL", "quantity": 10, "current_price": 150, "total_value": 1500},
-        {"symbol": "GOOGL", "quantity": 5, "current_price": 2000, "total_value": 10000}
-      ]
+      "status": "success",
+      "portfolio_value": 11500
     }`

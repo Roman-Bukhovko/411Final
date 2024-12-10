@@ -58,23 +58,100 @@ clear_db() {
   fi
 }
 
-# Function to perform HTTP requests and check status codes
-function test_route() {
-  METHOD=$1
-  ROUTE=$2
-  EXPECTED_STATUS=$3
-  DATA=$4
+###############################################
+#
+# Stock Operations
+#
+###############################################
 
-  if [ "$METHOD" == "POST" ]; then
-    RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$BASE_URL$ROUTE")
+buy_stock() {
+  username=$1
+  ticker=$2
+  quantity=$3
+
+  echo "Buying stock ($ticker)..."
+  response=$(curl -s -X POST "$BASE_URL/buy-stock" -H "Content-Type: application/json" \
+    -d "{\"username\":\"$username\", \"ticker\":\"$ticker\", \"quantity\":$quantity}")
+  
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Bought stock ($ticker) successfully."
   else
-    RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X GET "$BASE_URL$ROUTE")
+    echo "Failed to buy stock ($ticker). Response: $response"
+    exit 1
   fi
+}
 
-  if [ "$RESPONSE" == "$EXPECTED_STATUS" ]; then
-    echo "PASS: $METHOD $ROUTE (Status: $RESPONSE)"
+sell_stock() {
+  username=$1
+  ticker=$2
+  quantity=$3
+
+  echo "Selling stock ($ticker)..."
+  response=$(curl -s -X POST "$BASE_URL/sell-stock" -H "Content-Type: application/json" \
+    -d "{\"username\":\"$username\", \"ticker\":\"$ticker\", \"quantity\":$quantity}")
+  
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Sold stock ($ticker) successfully."
   else
-    echo "FAIL: $METHOD $ROUTE (Expected: $EXPECTED_STATUS, Got: $RESPONSE)"
+    echo "Failed to sell stock ($ticker). Response: $response"
+    exit 1
+  fi
+}
+
+get_portfolio() {
+  username=$1
+
+  echo "Fetching portfolio for user ($username)..."
+  response=$(curl -s -X POST "$BASE_URL/portfolio" -H "Content-Type: application/json" \
+    -d "{\"username\":\"$username\"}")
+  
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Retrieved portfolio for user ($username)."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Portfolio JSON:"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to retrieve portfolio. Response: $response"
+    exit 1
+  fi
+}
+
+get_stock_info() {
+  ticker=$1
+
+  echo "Fetching stock info for ticker ($ticker)..."
+  response=$(curl -s -X POST "$BASE_URL/stock-info" -H "Content-Type: application/json" \
+    -d "{\"ticker\":\"$ticker\"}")
+  
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Retrieved stock info for ($ticker)."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Stock Info JSON:"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to retrieve stock info for ($ticker). Response: $response"
+    exit 1
+  fi
+}
+
+get_portfolio_value() {
+  username=$1
+
+  echo "Fetching portfolio value for user ($username)..."
+  response=$(curl -s -X POST "$BASE_URL/portfolio-value" -H "Content-Type: application/json" \
+    -d "{\"username\":\"$username\"}")
+  
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Retrieved portfolio value for user ($username)."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Portfolio Value JSON:"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to retrieve portfolio value. Response: $response"
+    exit 1
   fi
 }
 
@@ -82,11 +159,10 @@ check_health
 check_db
 clear_db
 
-test_route "POST" "/register" "200" '{"username": "user1", "password": "password"}'
-test_route "POST" "/login" "200" '{"username": "user1", "password": "password"}'
-test_route "POST" "/buy-stock" "200" '{"username": "user1", "ticker": "AAPL", "quantity": 10}'
-test_route "POST" "/sell-stock" "200" '{"username": "user1", "ticker": "AAPL", "quantity": 5}'
-test_route "POST" "/portfolio" "200" '{"username": "user1"}'
-test_route "GET" "/invalid-route" "404"
+buy_stock "testuser" "AAPL" 10
+get_portfolio "testuser"
+get_stock_info "AAPL"
+sell_stock "testuser" "AAPL" 5
+get_portfolio_value "testuser"
 
 echo "Smoke tests completed."
