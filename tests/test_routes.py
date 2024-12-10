@@ -380,8 +380,7 @@ def test_porfolio_invalid(test_client):
     Test portfolio with invalid username
     """
 
-    response = test_client.post('/portfolio', data=json.dumps({
-        "username": ""
+
         }))
     assert response.status_code == 400
     assert response.json['status'] == 'error'
@@ -438,3 +437,54 @@ def test_portfolio_value_missing_fields(test_client):
     assert response.status_code == 400
     assert response.json['status'] == "error"
     assert response.json['message'] == "Username is required"
+
+#########################
+# Stock Info Unit Tests
+#########################
+
+def test_stock_info(test_client):
+    """
+    Test successful retrieval of stock info
+    """
+
+    #use mock to return fake stock info
+    with patch('yfinance.Ticker') as MockTicker:
+        mock_ticker = MockTicker.return_value
+        mock_ticker.history.return_value = {
+            "Close": [100, 101, 102, 103, 104],  # Last 5 closing prices
+            "Volume": [100000, 110000, 120000, 130000, 140000]  # Last 5 volumes
+        }
+
+        response = test_client.post('/stock-info', json={"ticker": "AAPL"})
+
+    assert response.status_code == 200
+    assert response.json['status'] == "success"
+    assert response.json['ticker'] == "AAPL"
+    assert response.json['last_prices'] == [100, 101, 102, 103, 104]
+    assert response.json['volumes'] == [100000, 110000, 120000, 130000, 140000]
+
+def test_stock_info_missing_fields(test_client):
+    """
+    Test stock info without specifying the ticker
+    """
+    response = test_client.post('/stock-info', json={})
+
+    assert response.status_code == 400
+    assert response.json['status'] == "error"
+    assert response.json['message'] == "Ticker is required"
+
+def test_stock_info_invalid_ticker(test_client):
+    """
+    Test when we plug in an invalid ticker
+    """
+
+    with patch('yfinance.Ticker') as MockTicker:
+        mock_ticker = MockTicker.return_value
+        mock_ticker.history.side_effect = Exception("Invalid ticker")
+
+        response = test_client.post('/stock-info', json={"ticker": "INVALID_TICKER"})
+
+    assert response.status_code == 404
+    assert response.json['status'] == "error"
+    assert response.json['message'] == "Invalid ticker"
+
