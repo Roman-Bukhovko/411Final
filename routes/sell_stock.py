@@ -2,10 +2,10 @@ from flask import Blueprint, request, jsonify
 from data.models import User, Stock, db
 import yfinance as yf
 
-buy_bp = Blueprint('buy-stock', __name__)
+sell_bp = Blueprint('sell-stock', __name__)
 
-@app.route('/buy-stock', methods=['GET', 'POST'])
-def buy_stock():
+@sell_bp.route('/sell-stock', methods=['POST'])
+def sell_stock():
     """
     Allows a user to sell shares of a specified stock.
 
@@ -20,9 +20,9 @@ def buy_stock():
         JSON: A message indicating whether the sale was successful or not. 
     """
     
-    username = request.json.get("username")
-    ticker = request.json.get("ticker")
-    quantity = request.json.get("quantity")
+    username = request.form.get("username")
+    ticker = request.form.get("ticker")
+    quantity = request.form.get("quantity")
 
     if not username or not ticker or not quantity:
         return jsonify({"status": "error", "message": "Missing fields"}), 400 
