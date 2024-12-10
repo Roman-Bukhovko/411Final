@@ -219,10 +219,10 @@ login_user "test" "password"
 change_password "test" "password" "new"
 login_user "test" "new"
 
-buy_stock "testuser" "AAPL" 10
-get_portfolio "testuser"
+buy_stock "test" "AAPL" 10
+get_portfolio "test"
 get_stock_info "AAPL"
-sell_stock "testuser" "AAPL" 5
-get_portfolio_value "testuser"
+sell_stock "test" "AAPL" 5
+get_portfolio_value "test"
 
 echo "Smoke tests completed."
