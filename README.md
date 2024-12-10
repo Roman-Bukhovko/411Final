@@ -178,3 +178,6 @@
       "status": "success",
       "portfolio_value": 11500
     }`
+
+# Smoke Test Running
+![Smoke Test](images/smoketestim.png)
