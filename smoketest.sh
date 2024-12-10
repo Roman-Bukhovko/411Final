@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the base URL for the Flask API
-BASE_URL="http://127.0.0.1:5000"
+BASE_URL="http://localhost:5000"
 
 #echo "BASE_URL is set to: $BASE_URL"
 
