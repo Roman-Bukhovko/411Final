@@ -60,6 +60,61 @@ clear_db() {
 
 ###############################################
 #
+# Login Operations
+#
+###############################################
+
+register_user() {
+  username=$1
+  password=$2
+
+  echo "Registering user ($username)..."
+  response=$(curl -s -X POST "$BASE_URL/register" -H "Content-Type: application/json" \
+    -d "{\"username\":\"$username\", \"password\":\"$password\"}")
+  
+  if echo "$response" | grep -q '"status": "User created"'; then
+    echo "User ($username) registered successfully."
+  else
+    echo "Failed to register user ($username). Response: $response"
+    exit 1
+  fi
+}
+
+login_user() {
+  username=$1
+  password=$2
+
+  echo "Logging in user ($username)..."
+  response=$(curl -s -X POST "$BASE_URL/login" -H "Content-Type: application/json" \
+    -d "{\"username\":\"$username\", \"password\":\"$password\"}")
+  
+  if echo "$response" | grep -q '"status": "Login successful"'; then
+    echo "User ($username) logged in successfully."
+  else
+    echo "Failed to log in user ($username). Response: $response"
+    exit 1
+  fi
+}
+
+change_password() {
+  username=$1
+  old_password=$2
+  new_password=$3
+
+  echo "Changing password for user ($username)..."
+  response=$(curl -s -X POST "$BASE_URL/change-password" -H "Content-Type: application/json" \
+    -d "{\"username\":\"$username\", \"old_password\":\"$old_password\", \"new_password\":\"$new_password\"}")
+  
+  if echo "$response" | grep -q '"status": "Password changed"'; then
+    echo "Password changed successfully for user ($username)."
+  else
+    echo "Failed to change password for user ($username). Response: $response"
+    exit 1
+  fi
+}
+
+###############################################
+#
 # Stock Operations
 #
 ###############################################
@@ -158,6 +213,11 @@ get_portfolio_value() {
 check_health
 check_db
 clear_db
+
+register_user "test" "password"
+login_user "test" "password"
+change_password "test" "password" "new"
+login_user "test" "new"
 
 buy_stock "testuser" "AAPL" 10
 get_portfolio "testuser"
