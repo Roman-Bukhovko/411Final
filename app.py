@@ -8,6 +8,7 @@ from routes.buy_stock import buy_bp
 from routes.sell_stock import sell_bp
 from routes.portfolio import port_bp
 from routes.portfolio_value import pv_bp
+from routes.stock_info import stock_bp
 
 load_dotenv()
 app = Flask(__name__)
@@ -20,6 +21,7 @@ app.register_blueprint(buy_bp)
 app.register_blueprint(sell_bp)
 app.register_blueprint(port_bp)
 app.register_blueprint(pv_bp)
+app.register_blueprint(stock_bp)
 
 db.init_app(app)
 
