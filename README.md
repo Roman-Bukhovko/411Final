@@ -36,7 +36,8 @@
   - Request Type: POST
   - Purpose: Allows users to purchase shares of a specified stock.
   - Request Body:
-    - symbol (String): The stock symbol (e.g., AAPL for Apple).
+    - username (String): The username of the buyer.
+    - ticker (String): The stock symbol. 
     - quantity (Integer): The number of shares to buy.
   - Response Format: JSON
     - Success Response Example:
@@ -66,8 +67,9 @@
   - Request Type: POST
   - Purpose: Allows users to sell shares of a stock they currently hold.
   - Request Body:
-    - symbol (String): The stock symbol (e.g., AAPL for Apple).
-    - quantity (Integer): The number of shares to sell.
+    - username (String): The username of the buyer.
+    - ticker (String): The stock symbol. 
+    - quantity (Integer): The number of shares to buy.
   - Response Format: JSON
     - Success Response Example:
       ### Code: 200
@@ -93,9 +95,10 @@
 
 
 3. Route: /portfolio
-  - Request Type: GET
+  - Request Type: POST
   - Purpose: Retrieves the user's current stock holdings and the total portfolio value.
-  - Request Body: None
+  - Request Body: 
+    - username (String): The username of the user.
   - Response Format: JSON
     - Success Response Example:
       ### Code: 200
@@ -123,9 +126,10 @@
 
 
 4. Route: /stock-info
-  - Request Type: GET
+  - Request Type: POST
   - Purpose: Provides detailed information about a specific stock.
-  - Request Body: None
+  - Request Body: 
+    - ticker (String): The stock symbol. 
   - Response Format: JSON
     - Success Response Example:
       ### Code: 200
@@ -152,9 +156,10 @@
 
 
 5. Route: /portfolio-value
-  - Request Type: GET
+  - Request Type: POST
   - Purpose: Calculates the total value of the user's portfolio in real-time, reflecting the latest stock prices.
-  - Request Body: None
+  - Request Body: 
+    - username (String): The username of the user.
   - Response Format: JSON
     - Success Response Example:
       ### Code: 200

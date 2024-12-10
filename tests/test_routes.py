@@ -60,7 +60,7 @@ def test_register_missing_credentials(test_client):
     """
 
     response = test_client.post('/register', data=json.dumps({
-        "username": "test"})
+        "username": "test"}))
 
     assert response.status_code == 200
     assert response.json['status'] == "Missing name or password"
@@ -130,7 +130,7 @@ def test_change_password(test_client):
         "username": "test", 
         "old_password": "password", 
         "new_password": "new_password"
-        })
+        }))
 
     assert response.status_code == 200
     assert response.json['status'] == "Password changed"
@@ -150,7 +150,7 @@ def test_change_password_missing_fields(test_client):
     response = test_client.post('/change-password', data=json.dumps({
         "username": "test",
         "old_password": "password"
-        })
+        }))
 
     assert response.status_code == 200
     assert response.json['status'] == "Missing required fields"
@@ -163,10 +163,10 @@ def test_change_password_wrong_credentials(test_client):
         "username": "test",
         "old_password": "password",
         "new_password": "new_password"
-        })
+        }))
 
     assert response.status_code == 200
-    asssert response.json['status'] == "Invalid credentials"
+    assert response.json['status'] == "Invalid credentials"
 
 #########################
 #Buy Unit Tests
@@ -220,15 +220,15 @@ def test_buy_stock_no_user(test_client):
     """
     
     #Try to buy stock 
-     response = test_client.post('/buy-stock', data=json.dumps({
+    response = test_client.post('/buy-stock', data=json.dumps({
         "username": "None",
         "ticker": "AAPL", 
         "quantity": 10
     }))
 
-     assert response.status_code == 400
-     assert response.json['status'] == 'error'
-     assert response.json['message'] == "User not found"
+    assert response.status_code == 400
+    assert response.json['status'] == 'error'
+    assert response.json['message'] == "User not found"
 
 #########################
 #Sell Unit Tests
@@ -317,17 +317,17 @@ def test_sell_stock_insufficient(test_client):
         }))
     
     assert response.status_code == 400
-    asser response.json['status'] == "error"
-    assesr response.json['message'] == "Insufficient shares or ticker not found"
+    assert response.json['status'] == "error"
+    assert response.json['message'] == "Insufficient shares or ticker not found"
 
-def test_sell_stock_no_user(test_client)
+def test_sell_stock_no_user(test_client):
     """Test selling stock of a non-existent user
     """
     # Sell without registering first
 
     response = test_client.post('/sell-stock', data=json.dumps({
         "username":"none", 
-        "ticker": "AAPL"
+        "ticker": "AAPL",
         "quantity": 10
         }))
 
@@ -381,7 +381,6 @@ def test_porfolio_invalid(test_client):
     """
 
 
-        }))
     assert response.status_code == 400
     assert response.json['status'] == 'error'
     assert response.json['message'] == "Username is required"
@@ -487,4 +486,3 @@ def test_stock_info_invalid_ticker(test_client):
     assert response.status_code == 404
     assert response.json['status'] == "error"
     assert response.json['message'] == "Invalid ticker"
-
