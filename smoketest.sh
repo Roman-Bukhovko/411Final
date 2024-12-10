@@ -47,6 +47,17 @@ check_db() {
   fi
 }
 
+clear_db() {
+  echo "Clearing database..."
+  curl -s -X GET "$BASE_URL/clear-db" | grep -q '"message": "Database cleared"'
+  if [ $? -eq 0 ]; then
+    echo "Database cleared."
+  else
+    echo "Failed to clear database."
+    exit 1
+  fi
+}
+
 # Function to perform HTTP requests and check status codes
 function test_route() {
   METHOD=$1
@@ -69,12 +80,13 @@ function test_route() {
 
 check_health
 check_db
+clear_db
 
-test_route "POST" "/login" "200" '{"name": "test", "password": "password"}'
-test_route "POST" "/register" "200" '{"name": "new", "password": "new"}'
-test_route "POST" "/buy-stock" "200" '{"username": "test", "ticker": "AAPL", "quantity": 10}'
-test_route "POST" "/sell-stock" "200" '{"username": "testuser", "ticker": "AAPL", "quantity": 5}'
-test_route "GET" "/portfolio?username=test" "200"
+test_route "POST" "/register" "200" '{"username": "user1", "password": "password"}'
+test_route "POST" "/login" "200" '{"username": "user1", "password": "password"}'
+test_route "POST" "/buy-stock" "200" '{"username": "user1", "ticker": "AAPL", "quantity": 10}'
+test_route "POST" "/sell-stock" "200" '{"username": "user1", "ticker": "AAPL", "quantity": 5}'
+test_route "POST" "/portfolio" "200" '{"username": "user1"}'
 test_route "GET" "/invalid-route" "404"
 
 echo "Smoke tests completed."

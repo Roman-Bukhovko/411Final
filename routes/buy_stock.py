@@ -1,5 +1,5 @@
-from flask import Blueprint, request, jsonify
-from data.models import User, Stock, db
+from flask import Blueprint, request, jsonify, current_app
+from data.models import User, db
 import yfinance as yf
 
 buy_bp = Blueprint('buy-stock', __name__)
@@ -19,18 +19,22 @@ def buy_stock():
     Returns:
         JSON: A message indicating whether the purchase was successful or not. 
     """
+    username = request.json.get("username")
+    ticker = request.json.get("ticker")
+    quantity = request.json.get("quantity")
 
-    username = request.form.get("username")
-    ticker = request.form.get("ticker")
-    quantity = request.form.get("quantity")
+    current_app.logger.info(f"User {username} is buying {quantity} shares of {ticker}")
 
     if not username or not ticker or not quantity:
+        current_app.logger.error("Missing fields")
         return jsonify({"status": "error", "message": "Missing fields"}), 400 
     
     user = db.session.get(User, username)
     if not user: 
+        current_app.logger.error("User not found")
         return jsonify({"status": "error", "message": "User not found"}), 404 
     
     user.add_ticker(ticker, quantity)
-    db.seesion.commit()
+    db.session.commit()
+    current_app.logger.info("Stock added to portfolio")
     return jsonify({"status": "success", "message": "Stock added to portfolio"}),  200

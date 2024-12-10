@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from data.models import User, db
 
 login_bp = Blueprint('login', __name__)
@@ -21,14 +21,17 @@ def login():
     
     # sanity check
     if not username or not password:
+        current_app.logger.error('Missing username or password')
         return jsonify({'status': 'Missing username or password'})
 
     # check if user exists and password is correct
     user = db.session.get(User, username)
     
     if user and user.check_password(password):
+        current_app.logger.info(f'User {username} logged in')
         return jsonify({'status': 'Login successful'})
     else:
+        current_app.logger.error('Invalid credentials')
         return jsonify({'status': 'Invalid credentials'})
 
 @login_bp.route('/register', methods=['POST'])
@@ -49,11 +52,13 @@ def register():
     
     # sanity check
     if not username or not password:
+        current_app.logger.error('Missing name or password')
         return jsonify({'status': 'Missing name or password'})
     
     # check if user already exists
     user = db.session.get(User, username)
     if user:
+        current_app.logger.error('Username already exists')
         return jsonify({'status': 'Username already exists'})
     
     # Create new user and set the password
@@ -63,7 +68,7 @@ def register():
     # Save the user to the database
     db.session.add(user)
     db.session.commit()
-    
+    current_app.logger.info(f'User {username} created')
     return jsonify({'status': 'User created'})
 
 @login_bp.route('/change-password', methods=['POST'])
