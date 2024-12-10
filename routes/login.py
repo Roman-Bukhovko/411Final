@@ -53,20 +53,20 @@ def register():
     # sanity check
     if not username or not password:
         current_app.logger.error('Missing name or password')
-        return jsonify({'status': 'Missing name or password'})
+        return jsonify({'status': 'Missing name or password'}), 400
     
     # check if user already exists
-    user = db.session.get(User, username)
+    user = User.query.filter_by(username=username).first()
     if user:
         current_app.logger.error('Username already exists')
-        return jsonify({'status': 'Username already exists'})
+        return jsonify({'status': 'Username already exists'}), 400
     
     # Create new user and set the password
-    user = User(username=username)
-    user.set_password(password)
+    new_user = User(username=username)
+    new_user.set_password(password)
     
     # Save the user to the database
-    db.session.add(user)
+    db.session.add(new_user)
     db.session.commit()
     current_app.logger.info(f'User {username} created')
     return jsonify({'status': 'User created'})

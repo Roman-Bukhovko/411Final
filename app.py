@@ -11,46 +11,68 @@ from routes.portfolio_value import pv_bp
 from routes.stock_info import stock_bp
 
 load_dotenv()
-app = Flask(__name__)
-
-db_url = "sqlite:///" + os.path.join(app.root_path, "data/data.db")
-app.config['SQLALCHEMY_DATABASE_URI'] = db_url
-
-app.register_blueprint(login_bp)
-app.register_blueprint(buy_bp)
-app.register_blueprint(sell_bp)
-app.register_blueprint(port_bp)
-app.register_blueprint(pv_bp)
-app.register_blueprint(stock_bp)
-
-db.init_app(app)
-
-with app.app_context():
-    db.create_all()
-
-@app.route("/clear-db", methods=["GET"])
-def clear_db():
+def create_app():
+    """Creates and configures the flask app
     """
-    Route to clear the database. For testing purposes only.
-    """
+    app = Flask(__name__)
+    db_url = "sqlite:///" + os.path.join(app.root_path, "data/data.db")
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+
+    app.register_blueprint(login_bp)
+    app.register_blueprint(buy_bp)
+    app.register_blueprint(sell_bp)
+    app.register_blueprint(port_bp)
+    app.register_blueprint(pv_bp)
+    app.register_blueprint(stock_bp)
+    db.init_app(app)
+
     with app.app_context():
-        db.drop_all()
         db.create_all()
-    return jsonify({"message": "Database cleared"}), 200
+
+    @app.route("/clear-db", methods=["GET"])
+    def clear_db():
+        """
+        Route to clear the database. For testing purposes only.
+        """
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+        return jsonify({"message": "Database cleared"}), 200
 
 # Health checks
-@app.route('/health', methods=['GET'])
-def healthcheck():
-    """
-    Health check route to verify the service is running.
+    @app.route('/health', methods=['GET'])
+    def healthcheck():
+        """
+        Health check route to verify the service is running.
 
-    Returns:
-        JSON response indicating the health status of the service.
-    """
-    app.logger.info('Health check')
-    return jsonify({'status': 'healthy'}), 200
+        Returns:
+            JSON response indicating the health status of the service.
+        """
+        app.logger.info('Health check')
+        return jsonify({'status': 'healthy'}), 200
+    
+    @app.route('/db-check', methods=['GET'])
+    def db_check():
+        """
+        Route to check if the database connection and meals table are functional.
 
-def check_database_connection():
+        Returns:
+            JSON response indicating the database health status.
+        Raises:
+            404 error if there is an issue with the database.
+        """
+        try:
+            app.logger.info("Checking database connection...")
+            check_database_connection()
+            app.logger.info("Database connection is OK.")
+            return jsonify({'database_status': 'healthy'}), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 404
+
+    return app
+
+
+def check_database_connection(app):
     """
     Function to check if the database connection is functional.
 
@@ -67,23 +89,7 @@ def check_database_connection():
         app.logger.error(error_message)
         raise Exception(error_message) from e
 
-@app.route('/db-check', methods=['GET'])
-def db_check():
-    """
-    Route to check if the database connection and meals table are functional.
-
-    Returns:
-        JSON response indicating the database health status.
-    Raises:
-        404 error if there is an issue with the database.
-    """
-    try:
-        app.logger.info("Checking database connection...")
-        check_database_connection()
-        app.logger.info("Database connection is OK.")
-        return jsonify({'database_status': 'healthy'}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 404
 
 if __name__ == '__main__':
+    app = create_app()
     app.run(debug=True)
