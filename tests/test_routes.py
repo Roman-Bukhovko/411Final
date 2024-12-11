@@ -1,4 +1,5 @@
 import pytest
+import pandas as pd
 import json
 from app import create_app
 from data.models import db, User
@@ -18,6 +19,15 @@ def test_client():
         db.session.remove()
         
 
+def clear_db_for_tests(test_client):
+    """
+    To clear database after making a request
+    """
+    response = test_client.get('/clear-db')
+    assert response.status_code == 200
+    assert response.json['message'] == 'Database cleared'
+
+
 #########################
 #Login Unit Tests
 #########################
@@ -26,6 +36,8 @@ def test_register(test_client):
     """
     Test user registration. 
     """
+    clear_db_for_tests(test_client)
+
     response = test_client.post('/register', data=json.dumps({
         "username": "unique_test10",
         "password": "password"
@@ -33,6 +45,8 @@ def test_register(test_client):
 
     assert response.status_code == 200
     assert response.json['status'] == "User created"
+
+    clear_db_for_tests(test_client)
 
 def test_register_duplicate(test_client):
     """
@@ -159,6 +173,9 @@ def test_change_password_missing_fields(test_client):
 def test_change_password_wrong_credentials(test_client):
     """Test change_password with non existent user
     """
+    #Clear db first
+    clear_db_for_tests(test_client)
+
     #Change password without registering user first
     response = test_client.post('/change-password', data=json.dumps({
         "username": "test",
@@ -177,6 +194,7 @@ def test_buy_stock(test_client):
     """
     Test successfully buying stock. 
     """
+    clear_db_for_tests(test_client)
 
     # Register a user
     test_client.post('/register', data=json.dumps({
@@ -185,15 +203,18 @@ def test_buy_stock(test_client):
     }), content_type='application/json')
 
     # Buy stock
-    response = test_client.post('/buy_stock', data=json.dumps({
+    response = test_client.post('/buy-stock', data=json.dumps({
         "username": "unique_test15",
         "ticker": "AAPL",
         "quantity": 10
-    }))
+    }), content_type='application/json')
+
+    print(response.status_code)
+    print(response.get_json())
 
     assert response.status_code == 200
     assert response.json['status'] == "success"
-    assert response.json['message'] == "Stock added"
+    assert response.json['message'] == "Stock added to portfolio"
 
 def test_buy_stock_missing_fields(test_client):
     """
@@ -398,21 +419,24 @@ def test_portfolio_value(test_client):
     Test porfolio_value successfully
     """
 
+    clear_db_for_tests(test_client)
+
     #Register a new user and buy stock
     test_client.post('/register', data=json.dumps({
         "username": "test",
         "password": "password"
-    }))
+    }), content_type='application/json'
+    )
     test_client.post('/buy-stock', data=json.dumps({
         "username": "test",
         "ticker": "AAPL",
         "quantity": 10
-    }))
+    }), content_type='application/json')
 
     #Mock the yfinance ticker
     with patch('yfinance.Ticker') as MockTicker:
         mock_ticker = MockTicker.return_value
-        mock_ticker.history.return_value = {"Close": [100]} #random num
+        mock_ticker.history.return_value = pd.DataFrame({"Close": [100]}) #random num
 
         response = test_client.post('/portfolio-value', json={"username": "test"})
 
@@ -453,18 +477,18 @@ def test_stock_info(test_client):
     #use mock to return fake stock info
     with patch('yfinance.Ticker') as MockTicker:
         mock_ticker = MockTicker.return_value
-        mock_ticker.history.return_value = {
+        mock_ticker.history.return_value = pd.DataFrame({
             "Close": [100, 101, 102, 103, 104],  # Last 5 closing prices
             "Volume": [100000, 110000, 120000, 130000, 140000]  # Last 5 volumes
-        }
+        })
 
-        response = test_client.post('/stock_info', json={"ticker": "AAPL"})
+        response = test_client.post('/stock-info', json={"ticker": "AAPL"})
 
-    assert response.status_code == 200
-    assert response.json['status'] == "success"
-    assert response.json['ticker'] == "AAPL"
-    assert response.json['last_prices'] == [100, 101, 102, 103, 104]
-    assert response.json['volumes'] == [100000, 110000, 120000, 130000, 140000]
+        assert response.status_code == 200
+        assert response.json['status'] == "success"
+        assert response.json['ticker'] == "AAPL"
+        assert response.json['last_prices'] == [100, 101, 102, 103, 104]
+        assert response.json['volumes'] == [100000, 110000, 120000, 130000, 140000]
 
 def test_stock_info_missing_fields(test_client):
     """

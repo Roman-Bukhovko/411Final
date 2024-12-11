@@ -36,6 +36,8 @@ def portfolio_value():
         current_app.logger.info(f'Fetching data for {ticker}')
         stock = yf.Ticker(ticker)
         total_value += stock.history(period="1d")["Close"].values[0] * tickers[ticker]
+    
+    total_value = int(total_value)
 
     current_app.logger.info(f'Total portfolio value for user {username} is: ${total_value}')
     return jsonify({"status": "success", "portfolio_value": total_value})
