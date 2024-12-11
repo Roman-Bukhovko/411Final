@@ -15,7 +15,7 @@ def create_app():
     """Creates and configures the flask app
     """
     app = Flask(__name__)
-    db_url = "sqlite:///" + os.path.join(app.root_path, "data/data.db")
+    db_url = "sqlite:///" + os.path.join(app.root_path, os.getenv("DB_PATH"))
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 
     app.register_blueprint(login_bp)

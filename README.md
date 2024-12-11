@@ -1,16 +1,13 @@
 # Stock Trading Application
 
 # Instructions On How To Run
-1. Install dependencies
-  `
-    pip install -r requirements.txt
-  `
-2. Set up .env file 
-3. Run run_docker script 
+
+1. Set up .env file. Add DB_PATH (which is probably "data/data.db")
+2. Run run_docker script 
   `
     ./run_docker.sh
   `
-4. Send requests to 'http://127.0.0.1:5000'
+3. Send requests to 'http://127.0.0.1:5000'
 
 ## Overview
 ### The Stock Trading Application is a straightforward and effective tool designed for individual investors who want to manage their portfolios, execute trades, and monitor market conditions.
