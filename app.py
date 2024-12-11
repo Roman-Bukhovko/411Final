@@ -39,7 +39,7 @@ def create_app():
             db.create_all()
         return jsonify({"message": "Database cleared"}), 200
 
-# Health checks
+    # Health checks
     @app.route('/health', methods=['GET'])
     def healthcheck():
         """
@@ -63,7 +63,7 @@ def create_app():
         """
         try:
             app.logger.info("Checking database connection...")
-            check_database_connection()
+            check_database_connection(app)
             app.logger.info("Database connection is OK.")
             return jsonify({'database_status': 'healthy'}), 200
         except Exception as e:

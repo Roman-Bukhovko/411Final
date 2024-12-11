@@ -17,7 +17,7 @@ fi
 
 # Run the Docker container with the necessary ports and volume mappings
 echo "Running Docker container..."
-docker run -d \
+docker run --network host -d \
   --name ${IMAGE_NAME}_container \
   -p ${HOST_PORT}:${CONTAINER_PORT} \
   ${IMAGE_NAME}:${CONTAINER_TAG}

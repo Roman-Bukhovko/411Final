@@ -5,6 +5,9 @@ from app import create_app
 from data.models import db, User
 from unittest.mock import patch
 
+# PYTHPATH=$(pwd) pytest
+# Run from root dir
+
 @pytest.fixture
 def test_client():
     """
