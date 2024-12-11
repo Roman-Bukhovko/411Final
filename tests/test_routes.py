@@ -27,7 +27,7 @@ def test_register(test_client):
     Test user registration. 
     """
     response = test_client.post('/register', data=json.dumps({
-        "username": "test2",
+        "username": "unique_test",
         "password": "password"
     }), content_type='application/json')
 
@@ -41,7 +41,7 @@ def test_register_duplicate(test_client):
 
     #Register a user
     response = test_client.post('/register', data=json.dumps({
-        "username": "test",
+        "username": "new_test",
         "password": "password"
     }), content_type='application/json')
     
@@ -50,7 +50,7 @@ def test_register_duplicate(test_client):
 
     #Register same user again
     response = test_client.post('/register', data=json.dumps({
-        "username": "test",
+        "username": "new_test",
         "password": "password"
     }), content_type='application/json')
 
@@ -64,7 +64,7 @@ def test_register_missing_credentials(test_client):
 
     response = test_client.post('/register', data=json.dumps({
         "username": "test"}), content_type='application/json')
-    assert response.status_code == 200
+    assert response.status_code == 400
     assert response.json['status'] == "Missing name or password"
 
 def test_login(test_client):
@@ -74,13 +74,13 @@ def test_login(test_client):
 
     # Register a user
     test_client.post('/register', data=json.dumps({
-        "username": "test",
+        "username": "unique_test1",
         "password": "password"
     }), content_type='application/json')
 
     # Test login with the registered user
     response = test_client.post('/login', data=json.dumps({
-        "username": "test",
+        "username": "unique_test1",
         "password": "password"
     }), content_type='application/json')
 
@@ -123,12 +123,12 @@ def test_change_password(test_client):
 
     #Register a new user
     test_client.post('/register', data=json.dumps({
-        "username":"test",
+        "username":"unique_test2",
         "password": "password"
         }), content_type='application/json')
     #Change their password and note response
     response = test_client.post('/change-password', data=json.dumps({
-        "username": "test", 
+        "username": "unique_test2", 
         "old_password": "password", 
         "new_password": "new_password"
         }), content_type='application/json')
@@ -173,7 +173,7 @@ def test_change_password_wrong_credentials(test_client):
 #Buy Unit Tests
 #########################
 
-def test_buy_stock():
+def test_buy_stock(test_client):
     """
     Test successfully buying stock. 
     """
@@ -235,7 +235,7 @@ def test_buy_stock_no_user(test_client):
 #Sell Unit Tests
 #########################
 
-def test_sell_stock():
+def test_sell_stock(test_client):
     """
     Test successful selling stock. 
     """
@@ -271,26 +271,26 @@ def test_sell_stock_missing_fields(test_client):
 
     # Register a user
     test_client.post('/register', data=json.dumps({
-        "username": "test",
+        "username": "unique_test3",
         "password": "password"
     }), content_type='application/json')
 
     # Buy stock
     test_client.post('/buy-stock', data=json.dumps({
-        "username": "test",
+        "username": "unique_test3",
         "ticker": "AAPL",
         "quantity": 10
     }), content_type='application/json')
 
     #Try to sell
     response = test_client.post('/sell-stock', data=json.dumps({
-        "username":"test", 
+        "username":"unique_test3", 
         "ticker": "AAPL"
         }), content_type='application/json')
     
     assert response.status_code == 400
     assert response.json['status'] == 'error'
-    assert repsonse.json['message'] == "Missing fields"
+    assert response.json['message'] == "Missing fields"
 
 def test_sell_stock_insufficient(test_client):
     """
@@ -298,13 +298,13 @@ def test_sell_stock_insufficient(test_client):
     """
     # Register a user
     test_client.post('/register', data=json.dumps({
-        "username": "test",
+        "username": "unique_test4",
         "password": "password"
     }), content_type='application/json')
 
     # Buy stock
     test_client.post('/buy-stock', data=json.dumps({
-        "username": "test",
+        "username": "unique_test4",
         "ticker": "AAPL",
         "quantity": 5
     }), content_type='application/json')
@@ -312,7 +312,7 @@ def test_sell_stock_insufficient(test_client):
     # Sell more than what you have
 
     response = test_client.post('/sell-stock', data=json.dumps({
-        "username": "test", 
+        "username": "unique_test4", 
         "ticker": "AAPL", 
         "quantity": 10
         }), content_type='application/json')
@@ -458,7 +458,7 @@ def test_stock_info(test_client):
             "Volume": [100000, 110000, 120000, 130000, 140000]  # Last 5 volumes
         }
 
-        response = test_client.post('/stock-info', json={"ticker": "AAPL"})
+        response = test_client.post('/stock_info', json={"ticker": "AAPL"})
 
     assert response.status_code == 200
     assert response.json['status'] == "success"
