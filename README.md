@@ -1,5 +1,18 @@
 # Stock Trading Application
 
+# Instructions On How To Run
+1. Install dependencies
+  `
+    pip install -r requirements.txt
+  `
+2. Set up .env file 
+3. Run run_docker script 
+  `
+    ./run_docker.sh
+  `
+4. Open browser
+  - Head to: 'http://127.0.0.1:5000'
+
 ## Overview
 ### The Stock Trading Application is a straightforward and effective tool designed for individual investors who want to manage their portfolios, execute trades, and monitor market conditions.
 
@@ -177,6 +190,82 @@
     `{
       "status": "success",
       "portfolio_value": 11500
+    }`
+
+6. Route: /register
+  - Request Type: POST
+  - Purpose: Registers a new user by creating a new entry in the database.
+  - Request Body: 
+    - username (String): The username of the user.
+    - password (String): The password of the user.
+  - Response Format: JSON
+    - Success Response Example:
+      ### Code: 200
+    `{
+      "status": "User created"
+    }`
+
+  -  Example Request:
+    `{
+      "username": "testuser",
+      "password": "testpassword"
+    }`
+
+  - Example Response:
+    `{
+      "status": "User created"
+    }`
+
+
+7. Route: /login
+  - Request Type: POST
+  - Purpose: Logs in a user by checking the username and password against the database.
+  - Request Body: 
+    - username (String): The username of the user.
+    - password (String): The password of the user.
+  - Response Format: JSON
+    - Success Response Example:
+      ### Code: 200
+    `{
+      "status": "Login successful"
+    }`
+
+  - Example Request:
+    `{
+      "username": "testuser",
+      "password": "testpassword"
+    }`
+
+  - Example Response:
+    `{
+      "status": "Login successful"
+    }`
+
+
+8. Route: /change-password
+  - Request Type: POST
+  - Purpose: Allows users to change their password.
+  - Request Body: 
+    - username (String): The username of the user.
+    - old_password (String): The current password of the user.
+    - new_password (String): The new password of the user.
+  - Response Format: JSON
+    - Success Response Example:
+      ### Code: 200
+      `{
+        "status": "Password changed",
+      }`
+
+  - Example Request:
+    `{
+      "username": "testuser",
+      "old_password": "old_password",
+      "new_password": "new_password"
+    }`
+
+  - Example Response:
+    `{
+        "status": "Password changed",
     }`
 
 # Smoke Test Running
