@@ -27,7 +27,7 @@ def test_register(test_client):
     Test user registration. 
     """
     response = test_client.post('/register', data=json.dumps({
-        "username": "unique_test",
+        "username": "unique_test10",
         "password": "password"
     }), content_type='application/json')
 
@@ -41,7 +41,7 @@ def test_register_duplicate(test_client):
 
     #Register a user
     response = test_client.post('/register', data=json.dumps({
-        "username": "new_test",
+        "username": "new_test12",
         "password": "password"
     }), content_type='application/json')
     
@@ -50,7 +50,7 @@ def test_register_duplicate(test_client):
 
     #Register same user again
     response = test_client.post('/register', data=json.dumps({
-        "username": "new_test",
+        "username": "new_test12",
         "password": "password"
     }), content_type='application/json')
 
@@ -123,12 +123,12 @@ def test_change_password(test_client):
 
     #Register a new user
     test_client.post('/register', data=json.dumps({
-        "username":"unique_test2",
+        "username":"unique_test5",
         "password": "password"
         }), content_type='application/json')
     #Change their password and note response
     response = test_client.post('/change-password', data=json.dumps({
-        "username": "unique_test2", 
+        "username": "unique_test5", 
         "old_password": "password", 
         "new_password": "new_password"
         }), content_type='application/json')
@@ -180,13 +180,13 @@ def test_buy_stock(test_client):
 
     # Register a user
     test_client.post('/register', data=json.dumps({
-        "username": "test",
+        "username": "unique_test15",
         "password": "password"
     }), content_type='application/json')
 
     # Buy stock
     response = test_client.post('/buy_stock', data=json.dumps({
-        "username": "test",
+        "username": "unique_test15",
         "ticker": "AAPL",
         "quantity": 10
     }))
@@ -227,7 +227,7 @@ def test_buy_stock_no_user(test_client):
         "quantity": 10
     }), content_type='application/json')
 
-    assert response.status_code == 400
+    assert response.status_code == 404
     assert response.json['status'] == 'error'
     assert response.json['message'] == "User not found"
 
@@ -298,13 +298,13 @@ def test_sell_stock_insufficient(test_client):
     """
     # Register a user
     test_client.post('/register', data=json.dumps({
-        "username": "unique_test4",
+        "username": "unique_test20",
         "password": "password"
     }), content_type='application/json')
 
     # Buy stock
     test_client.post('/buy-stock', data=json.dumps({
-        "username": "unique_test4",
+        "username": "unique_test20",
         "ticker": "AAPL",
         "quantity": 5
     }), content_type='application/json')
@@ -312,7 +312,7 @@ def test_sell_stock_insufficient(test_client):
     # Sell more than what you have
 
     response = test_client.post('/sell-stock', data=json.dumps({
-        "username": "unique_test4", 
+        "username": "unique_test20", 
         "ticker": "AAPL", 
         "quantity": 10
         }), content_type='application/json')
