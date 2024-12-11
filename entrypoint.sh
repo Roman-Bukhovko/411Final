@@ -6,4 +6,4 @@ if [ -f .env ]; then
 fi
 
 # Start the Python application
-exec python app.py
+exec python3 app.py
