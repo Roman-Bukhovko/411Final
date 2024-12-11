@@ -10,8 +10,7 @@
   `
     ./run_docker.sh
   `
-4. Open browser
-  - Head to: 'http://127.0.0.1:5000'
+4. Send requests to 'http://127.0.0.1:5000'
 
 ## Overview
 ### The Stock Trading Application is a straightforward and effective tool designed for individual investors who want to manage their portfolios, execute trades, and monitor market conditions.
